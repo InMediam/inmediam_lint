@@ -112,10 +112,18 @@ No `package.json` do projeto:
 
 Veja o guia passo a passo em [`MIGRATION.md`](./MIGRATION.md).
 
-## Publicação (mantenedores)
+## Contribuindo e publicação
+
+O versionamento e a publicação no npm são automatizados com
+[Changesets](https://github.com/changesets/changesets) e GitHub Actions: todo
+PR que altera o pacote inclui um changeset, e o merge na `main` publica uma nova
+versão automaticamente (via Trusted Publishing / OIDC, sem token).
+
+Em resumo, no seu PR:
 
 ```bash
-npm version <patch|minor|major>
-npm publish        # publishConfig.access já está como "public"
-git push --follow-tags
+npx changeset   # descreve a mudança e o tipo de bump (patch/minor/major)
 ```
+
+Consulte o [`CONTRIBUTING.md`](./CONTRIBUTING.md) para o passo a passo completo
+do fluxo de contribuição e do processo de release.

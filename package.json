@@ -28,7 +28,10 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "keywords": [
     "eslint",
@@ -55,6 +58,7 @@
     "typescript-eslint": "^8.60.1"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.11",
     "eslint": "^9.39.4",
     "typescript": "^5.9.0"
   }
