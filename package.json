@@ -1,0 +1,61 @@
+{
+  "name": "@inmediam/lint",
+  "version": "1.0.0",
+  "description": "Configuração de ESLint (flat config, ESLint 9+) padrão da Inmediam.",
+  "license": "MIT",
+  "type": "module",
+  "main": "base.mjs",
+  "exports": {
+    ".": "./base.mjs",
+    "./base": "./base.mjs",
+    "./node": "./node.mjs",
+    "./react": "./react.mjs"
+  },
+  "files": [
+    "base.mjs",
+    "node.mjs",
+    "react.mjs",
+    "README.md",
+    "MIGRATION.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inmediam/lint.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "eslint",
+    "eslintconfig",
+    "inmediam"
+  ],
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "typescript": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^17.6.0",
+    "neostandard": "^0.13.0",
+    "typescript-eslint": "^8.60.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "typescript": "^5.9.0"
+  }
+}
