@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inmediam/lint.git"
+    "url": "git+https://github.com/inmediam/inmediam_lint.git"
   },
   "scripts": {
     "lint": "eslint .",
