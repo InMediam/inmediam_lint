@@ -160,18 +160,41 @@ não há `--ext` embutido. No `inmediam_front` está assim e segue funcionando:
 
 O `@inmediam/lint` faz a formatação de estilo pelo `neostandard`. Se o projeto
 ainda tiver um Prettier configurado para o **mesmo** estilo (semi, aspas), eles
-podem brigar. Opções:
+podem brigar. Escolha **um** dos dois caminhos:
 
-- **Recomendado:** deixar o `@inmediam/lint` cuidar do estilo e remover o
-  Prettier do fluxo de lint.
-- Se o Prettier era mantido **apenas** para ordenar classes do Tailwind
-  (`prettier-plugin-tailwindcss`, caso do `inmediam_front`), agora dá para
-  remover o Prettier por completo — use o add-on de Tailwind (passo 7.1).
+**Caminho A — manter o Prettier (transição sem atrito).** Use o add-on
+`@inmediam/lint/prettier`, que faz o que o `@rocketseat/eslint-config` já fazia:
+roda o Prettier por dentro do ESLint via `eslint-plugin-prettier`.
+
+```js
+import react from '@inmediam/lint/react'
+import prettier from '@inmediam/lint/prettier'
+
+export default [...react, ...prettier()]   // sempre por último
+```
+
+Escolha este se você depende do `--fix` para **quebrar linha**. Sem ele, o
+`@stylistic/max-len` passa a só reportar `This line has a length of 88` — a
+regra não tem fixer, e nenhuma regra do ESLint tem: rewrapar linha é trabalho
+de formatter. O estilo padrão do add-on é o mesmo do Rocketseat, então o diff
+da migração é zero. Você pode desinstalar o `prettier` do projeto — ele já vem
+como dependência do `@inmediam/lint`.
+
+**Caminho B — sair do Prettier de vez.** Deixe o `neostandard`/`@stylistic`
+cuidar do estilo e remova o Prettier do fluxo. Mais leve e sem duas ferramentas
+formatando o mesmo arquivo, mas aceite a contrapartida: linha longa vira aviso
+que você quebra na mão.
+
+Nos dois caminhos, se o Prettier era mantido **apenas** para ordenar classes do
+Tailwind (`prettier-plugin-tailwindcss`), remova esse plugin e use o add-on de
+Tailwind (passo 7.1) — inclusive no caminho A.
 
 ### 7.1. Tailwind: do Prettier para o ESLint
 
 ```bash
-npm uninstall prettier prettier-plugin-tailwindcss
+npm uninstall prettier-plugin-tailwindcss
+# no caminho B, remova também o prettier:
+npm uninstall prettier
 ```
 
 E no `eslint.config.mjs`:
@@ -269,7 +292,8 @@ rm -rf node_modules package-lock.json && npm install
 - [ ] `.eslintrc.json` / `.eslintignore` apagados
 - [ ] `eslint.config.mjs` criado
 - [ ] Scripts de lint sem `--ext`
-- [ ] Prettier ajustado para não conflitar
+- [ ] Prettier resolvido: add-on `@inmediam/lint/prettier` (caminho A) **ou**
+      removido do fluxo (caminho B) — veja o passo 7
 - [ ] Tailwind: `prettier-plugin-tailwindcss` trocado pelo add-on (passo 7.1)
 - [ ] `npm ls @humanwhocodes/config-array` vazio (sem ESLint 8 na árvore)
 - [ ] `npm run lint` passando
