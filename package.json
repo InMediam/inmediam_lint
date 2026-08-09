@@ -9,18 +9,23 @@
     ".": "./base.mjs",
     "./base": "./base.mjs",
     "./node": "./node.mjs",
-    "./react": "./react.mjs"
+    "./react": "./react.mjs",
+    "./tailwind": "./tailwind.mjs"
   },
   "files": [
     "base.mjs",
     "node.mjs",
     "react.mjs",
+    "tailwind.mjs",
     "README.md",
     "MIGRATION.md",
     "LICENSE"
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=23.0.0"
   },
   "repository": {
     "type": "git",
@@ -49,6 +54,7 @@
   },
   "dependencies": {
     "@eslint/js": "^9.39.4",
+    "eslint-plugin-better-tailwindcss": "^4.7.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
