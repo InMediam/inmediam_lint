@@ -1,6 +1,6 @@
 {
   "name": "@inmediam/lint",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Configuração de ESLint (flat config, ESLint 9+) padrão da Inmediam.",
   "license": "MIT",
   "type": "module",
