@@ -21,6 +21,9 @@ reincorporados.
 - **Tailwind CSS** (opt-in): ordenação e limpeza de classes via
   **eslint-plugin-better-tailwindcss** — substitui o
   `prettier-plugin-tailwindcss`
+- **Prettier** (opt-in): formatação auto-corrigível via
+  **eslint-plugin-prettier**, para quem quer que o `--fix` também quebre linha
+  (o `neostandard` sozinho não faz isso)
 
 ## Requisitos
 
@@ -72,8 +75,8 @@ export default config
 
 ### Tailwind CSS
 
-O add-on de Tailwind é o único preset que **não** inclui a base e o único que é
-uma **função** — ele se combina com um dos outros:
+Assim como o de Prettier, este add-on **não** inclui a base e é uma **função** —
+ele se combina com um dos presets acima:
 
 ```js
 import react from '@inmediam/lint/react'
@@ -130,6 +133,80 @@ export default [
   },
 ]
 ```
+
+### Prettier
+
+Add-on opt-in para quem quer que o `eslint --fix` **conserte** a formatação, e
+não só reclame dela.
+
+O motivo de existir: o `@stylistic/max-len` do preset base reporta
+
+```
+This line has a length of 88. Maximum allowed is 80.
+```
+
+mas **não tem fixer** — nenhuma regra do ESLint sabe decidir onde quebrar uma
+linha, isso é trabalho de formatter. Com este add-on o diagnóstico vira
+
+```
+Insert `⏎···`   prettier/prettier
+```
+
+que o `--fix` resolve sozinho. É o mesmo mecanismo do
+`@rocketseat/eslint-config` (ele trazia o `eslint-plugin-prettier` embutido):
+o Prettier roda **por dentro do ESLint**, então **não é preciso instalar a
+extensão do Prettier no VS Code** — o `source.fixAll.eslint` já basta.
+
+```js
+import react from '@inmediam/lint/react'
+import tailwind from '@inmediam/lint/tailwind'
+import prettier from '@inmediam/lint/prettier'
+
+export default [
+  ...react,
+  ...tailwind({ entryPoint: 'src/global.css' }),
+  ...prettier(),
+]
+```
+
+> **A ordem importa: o add-on tem que vir por último.** Ele embute o
+> `eslint-config-prettier`, que desliga todas as regras de formatação do
+> `@stylistic` (incluindo `max-len` e `curly`). Se vier antes de `react`/`base`,
+> essas regras voltam a ligar e passam a brigar com o Prettier.
+
+O estilo padrão é idêntico ao que o `@rocketseat/eslint-config` aplicava, de
+propósito — adotar o add-on num projeto que veio de lá não reformata nada:
+
+| Opção | Valor |
+| --- | --- |
+| `printWidth` | `80` |
+| `tabWidth` | `2` |
+| `semi` | `false` |
+| `singleQuote` | `true` (`jsxSingleQuote: false` — aspas duplas no JSX) |
+| `trailingComma` | `'all'` |
+| `arrowParens` | `'always'` |
+| `endOfLine` | `'auto'` |
+
+Para ajustar, passe as opções na função:
+
+```js
+...prettier({ printWidth: 100 })
+```
+
+> **`.prettierrc` não sobrescreve esses padrões.** O `eslint-plugin-prettier` dá
+> precedência às opções declaradas na regra sobre as do arquivo. Chaves que a
+> tabela acima não define (`plugins`, `overrides`, …) continuam vindo do
+> `.prettierrc`, e o `.prettierignore` continua valendo.
+
+#### Junto com o add-on de Tailwind
+
+Funciona sem conflito, e é a combinação recomendada. O Prettier não mexe no
+conteúdo da string de classes — quem ordena continua sendo o
+`better-tailwindcss`. A única regra daquele add-on que brigaria com isto
+(`enforce-consistent-line-wrapping`) já fica desligada de propósito.
+
+> **Não** instale o `prettier-plugin-tailwindcss` junto. Seriam dois fixers
+> ordenando a mesma string, em ferramentas diferentes.
 
 ### Estendendo / sobrescrevendo
 
