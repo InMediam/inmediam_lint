@@ -22,13 +22,6 @@ export default [
   ...neostandard({
     ignores: resolveIgnoresFromGitignore(),
   }),
-  // O neostandard reativa regras core do ESLint que o próprio TypeScript já
-  // cobre (`no-undef`, `no-redeclare`, `no-dupe-keys`, ...). Como ele entra
-  // depois do preset do typescript-eslint, reaplicamos o `eslintRecommended`
-  // aqui — ele só afeta `.ts/.tsx/.mts/.cts`, então os arquivos `.js`
-  // continuam com as regras core ligadas.
-  // Sem isto, `no-undef` acusa falso positivo em tipos globais (React, JSX) e
-  // nos globals de test runners.
   tseslint.configs.eslintRecommended,
   {
     plugins: {
