@@ -28,7 +28,7 @@ em vez do Prettier.
 
 ## 1. Pré-requisitos
 
-- Node 18+.
+- Node **20.19+** (`^20.19.0 || ^22.12.0 || >=23.0.0`).
 - Atualizar o ESLint para a **versão 9** (o `@inmediam/lint` exige `eslint@^9`):
 
 ```bash
@@ -164,10 +164,36 @@ podem brigar. Opções:
 
 - **Recomendado:** deixar o `@inmediam/lint` cuidar do estilo e remover o
   Prettier do fluxo de lint.
-- Se o Prettier for mantido **apenas** para ordenar classes do Tailwind
-  (`prettier-plugin-tailwindcss`, caso do `inmediam_front`), mantenha um
-  `prettier.config.cjs` enxuto só com o plugin de Tailwind e rode o Prettier
-  separadamente, sem regras de semi/aspas que conflitem.
+- Se o Prettier era mantido **apenas** para ordenar classes do Tailwind
+  (`prettier-plugin-tailwindcss`, caso do `inmediam_front`), agora dá para
+  remover o Prettier por completo — use o add-on de Tailwind (passo 7.1).
+
+### 7.1. Tailwind: do Prettier para o ESLint
+
+```bash
+npm uninstall prettier prettier-plugin-tailwindcss
+```
+
+E no `eslint.config.mjs`:
+
+```js
+import react from '@inmediam/lint/react'
+import tailwind from '@inmediam/lint/tailwind'
+
+export default [...react, ...tailwind({ entryPoint: 'src/global.css' })]
+```
+
+Aponte o `entryPoint` para o CSS que faz `@import "tailwindcss"` (no
+`inmediam_front`, confira o caminho real — costuma ser `src/index.css`). Em
+projeto ainda no Tailwind v3, troque por `tailwindConfig: 'tailwind.config.js'`.
+
+A ordem das classes é idêntica à do `prettier-plugin-tailwindcss` — os dois
+usam a API do próprio Tailwind. Na prática o `lint:fix` produz o mesmo
+resultado que o Prettier produzia.
+
+> Não deixe os dois ativos ao mesmo tempo. Eles concordam na ordem, mas
+> formatam a mesma string em ferramentas diferentes, o que gera ruído no
+> `lint-staged` (um roda depois do outro e o arquivo muda duas vezes).
 
 ---
 
@@ -208,6 +234,33 @@ adicione em `.vscode/settings.json`:
 
 ---
 
+## Problemas comuns
+
+### `npm warn deprecated @humanwhocodes/config-array` / `object-schema`
+
+```
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+```
+
+Esses dois pacotes são dependências do **ESLint 8** — não vêm do
+`@inmediam/lint`. Se o warning aparece, sobrou ESLint 8 na árvore do projeto,
+normalmente porque o `@rocketseat/eslint-config` (que fixa `eslint@^8`) não foi
+desinstalado no passo 2. Para descobrir quem puxa:
+
+```bash
+npm ls @humanwhocodes/config-array
+```
+
+Remova o pacote apontado e regenere o lock:
+
+```bash
+npm uninstall @rocketseat/eslint-config
+rm -rf node_modules package-lock.json && npm install
+```
+
+---
+
 ## Checklist rápido
 
 - [ ] ESLint atualizado para a v9
@@ -217,4 +270,6 @@ adicione em `.vscode/settings.json`:
 - [ ] `eslint.config.mjs` criado
 - [ ] Scripts de lint sem `--ext`
 - [ ] Prettier ajustado para não conflitar
+- [ ] Tailwind: `prettier-plugin-tailwindcss` trocado pelo add-on (passo 7.1)
+- [ ] `npm ls @humanwhocodes/config-array` vazio (sem ESLint 8 na árvore)
 - [ ] `npm run lint` passando
