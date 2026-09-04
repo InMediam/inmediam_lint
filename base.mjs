@@ -32,6 +32,11 @@ export default [
       // tipos; o neostandard reativa a regra core, então desligamos a core
       // para evitar diagnósticos duplicados (mesmo comportamento da v2).
       'no-unused-vars': 'off',
+      // Um ternário dentro de outro ternário é sempre uma decisão que precisa
+      // de nome: uma função com early returns ou um Record indexado pelo
+      // discriminante. Não tem fixer — nenhuma regra do ESLint sabe inventar
+      // esse nome — então o `--fix` não resolve, é edição manual.
+      'no-nested-ternary': 'error',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       '@stylistic/max-len': ['warn', {
