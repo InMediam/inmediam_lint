@@ -16,6 +16,8 @@ reincorporados.
   `eslint-config-standard` + Prettier) — sem ponto e vírgula, aspas simples,
   vírgula final em multilinha, largura de 80 colunas
 - Ordenação de imports/exports (**simple-import-sort**)
+- **Ternários aninhados proibidos** (`no-nested-ternary` em `error`) — três ou
+  mais resultados pedem um nome, não mais indentação
 - **React**: `eslint-plugin-react` (recommended + JSX runtime),
   `eslint-plugin-react-hooks` e regras de acessibilidade (`jsx-a11y`) em `warn`
 - **Tailwind CSS** (opt-in): ordenação e limpeza de classes via
@@ -232,6 +234,75 @@ export default [
 ```
 
 > O `neostandard` já ignora automaticamente o que está no `.gitignore`.
+
+## Ternários aninhados
+
+O config base liga a regra core `no-nested-ternary` em **`error`**. Um ternário
+cujo branch contém outro ternário é uma decisão de três ou mais vias, e uma
+decisão dessas precisa de um nome:
+
+```ts
+// ERRADO
+const label = !temAditivo
+  ? 'o termo de vistoria'
+  : termoAssinado
+    ? 'o aditivo ao termo'
+    : 'o termo e o aditivo'
+```
+
+Três formas de resolver, em ordem de preferência:
+
+**1. Função nomeada com early returns** — o caso geral:
+
+```ts
+function getLabel({ hasAditivo, isTermoSigned }: LabelParams) {
+  if (!hasAditivo) return 'o termo de vistoria'
+  if (isTermoSigned) return 'o aditivo ao termo'
+  return 'o termo e o aditivo'
+}
+```
+
+**2. `Record` indexado pelo discriminante** — quando o resultado mapeia 1:1 para
+um enum:
+
+```ts
+const STATUS_LABEL: Record<Status, string> = {
+  [Status.PENDENTE]: 'Pendente',
+  [Status.ATIVA]: 'Ativa',
+  [Status.ENCERRADA]: 'Encerrada',
+}
+
+const label = STATUS_LABEL[status]
+```
+
+**3. Condições independentes** — quando o ternário está escolhendo JSX:
+
+```tsx
+{isPending && <Skeleton />}
+{isEmpty && <Empty />}
+{data && <Rows data={data} />}
+```
+
+Um ternário **único e plano** (`const label = isAtiva ? 'Ativa' : 'Inativa'`)
+continua permitido — a regra só reclama de aninhamento.
+
+> A regra **não tem fixer**: nenhuma regra do ESLint sabe inventar o nome da
+> função ou do mapa. O `--fix` não resolve; é edição manual.
+
+Se um projeto precisar de mais tempo para se adequar, rebaixe a regra no próprio
+`eslint.config.mjs` em vez de espalhar `eslint-disable` pelo código:
+
+```js
+export default [
+  ...config,
+  {
+    rules: {
+      // TODO: remover depois de limpar os casos existentes
+      'no-nested-ternary': 'warn',
+    },
+  },
+]
+```
 
 ## Script de lint sugerido
 
